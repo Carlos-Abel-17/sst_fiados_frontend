@@ -1,0 +1,417 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+}
+
+.microphone-page {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-page);
+  max-width: 480px;
+  margin: 0 auto;
+  transition: background-color $transition-base;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: $border-width solid var(--color-border);
+  border-radius: $border-radius-full;
+  background-color: var(--color-toggle-bg);
+  color: var(--color-toggle-icon);
+  cursor: pointer;
+  transition:
+    background-color $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:hover {
+    background-color: var(--color-bg-elevated);
+  }
+}
+
+// ─── Voice input ──────────────────────────────────────────────
+
+.voice-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl $spacing-lg $spacing-xl;
+  text-align: center;
+}
+
+.voice-section__title {
+  font-family: $font-headline;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0 0 $spacing-sm;
+  transition: color $transition-base;
+}
+
+.voice-section__subtitle {
+  font-family: $font-body;
+  font-size: $font-size-sm;
+  color: var(--color-text-secondary);
+  margin: 0 0 $spacing-2xl;
+  transition: color $transition-base;
+}
+
+.voice-section__success {
+  font-family: $font-body;
+  font-size: $font-size-xs;
+  color: var(--color-primary);
+  margin: $spacing-md $spacing-md 0;
+  max-width: 20rem;
+  line-height: $line-height-normal;
+
+  strong {
+    font-weight: $font-weight-semibold;
+    word-break: break-all;
+  }
+
+  &--warning {
+    color: $color-warning;
+  }
+}
+
+.voice-section__hint {
+  font-family: $font-body;
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  margin: $spacing-md $spacing-md 0;
+  max-width: 18rem;
+  line-height: $line-height-normal;
+}
+
+.voice-section__error {
+  font-family: $font-body;
+  font-size: $font-size-sm;
+  color: $color-error;
+  margin: $spacing-md 0 0;
+}
+
+.mic-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.mic-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 7.5rem;
+  height: 7.5rem;
+  border: none;
+  border-radius: $border-radius-full;
+  background-color: var(--color-primary);
+  color: $color-white;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--color-mic-shadow);
+  transition:
+    transform $transition-fast,
+    box-shadow $transition-fast,
+    background-color $transition-fast;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    transform: scale(1.04);
+  }
+
+  &:active:not(:disabled),
+  &--recording {
+    transform: scale(0.96);
+    box-shadow: 0 4px 12px var(--color-mic-shadow-active);
+    background-color: var(--color-primary-active);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.mic-button__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.recording-timer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.recording-timer__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: $border-radius-full;
+  background-color: $color-error;
+  animation: recording-pulse 1s ease-in-out infinite;
+}
+
+.recording-timer__time {
+  font-family: $font-headline;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5rem;
+}
+
+@keyframes recording-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.send-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  min-width: 10rem;
+  padding: $spacing-md $spacing-xl;
+  border: none;
+  border-radius: $border-radius-full;
+  background-color: var(--color-primary);
+  color: $color-white;
+  font-family: $font-headline;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--color-mic-shadow);
+  transition:
+    transform $transition-fast,
+    background-color $transition-fast,
+    opacity $transition-fast;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    background-color: var(--color-primary-active);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.send-button__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+// ─── Recent records ───────────────────────────────────────────
+
+.records-section {
+  padding: 0 $spacing-md $spacing-xl;
+}
+
+.records-section__header {
+  margin-bottom: $spacing-md;
+}
+
+.records-section__title {
+  font-family: $font-headline;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--color-text-primary);
+  margin: 0;
+  transition: color $transition-base;
+}
+
+.records-section__hint {
+  font-family: $font-body;
+  font-size: $font-size-xs;
+  color: var(--color-primary);
+  margin: $spacing-sm 0 $spacing-md;
+  line-height: $line-height-normal;
+}
+
+.records-section__actions {
+  margin-top: $spacing-lg;
+  display: flex;
+  justify-content: center;
+}
+
+.records-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.record-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background-color: var(--color-bg-surface);
+  border: $border-width solid var(--color-border);
+  border-radius: $border-radius-lg;
+  transition:
+    background-color $transition-base,
+    border-color $transition-base;
+}
+
+.record-card__avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: $border-radius-full;
+  font-family: $font-headline;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+}
+
+.record-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.record-card__name {
+  font-family: $font-headline;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: var(--color-text-primary);
+  transition: color $transition-base;
+}
+
+.record-card__details {
+  font-family: $font-body;
+  font-size: $font-size-xs;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color $transition-base;
+}
+
+.record-card__amount-block {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $spacing-xs;
+}
+
+.record-card__amount {
+  font-family: $font-headline;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: var(--color-primary);
+  transition: color $transition-base;
+}
+
+.record-card__status {
+  font-family: $font-label;
+  font-size: 0.625rem;
+  font-weight: $font-weight-medium;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  transition: color $transition-base;
+}
+
+.row-mic-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: none;
+  border-radius: $border-radius-full;
+  background-color: var(--color-primary);
+  color: $color-white;
+  cursor: pointer;
+  transition:
+    background-color $transition-fast,
+    transform $transition-fast;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+
+  &--recording {
+    background-color: var(--color-primary-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.row-mic-button__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgb(255 255 255 / 0.35);
+  border-top-color: $color-white;
+  border-radius: $border-radius-full;
+  animation: row-mic-spin 0.8s linear infinite;
+}
+
+@keyframes row-mic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:host ::ng-deep .fiado-row--error {
+  background-color: rgb(239 68 68 / 0.12) !important;
+
+  td {
+    color: $color-error;
+  }
+}
+
+html[data-theme='dark'] :host ::ng-deep .fiado-row--error {
+  background-color: rgb(239 68 68 / 0.2) !important;
+}

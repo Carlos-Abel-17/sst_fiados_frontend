@@ -1,0 +1,86 @@
+@use 'variables' as *;
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border: $border-width solid transparent;
+  border-radius: $border-radius-md;
+  font-family: $font-label;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-tight;
+  cursor: pointer;
+  transition: background-color $transition-fast, border-color $transition-fast, color $transition-fast;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: $color-primary;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-800;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: $neutral-200;
+  color: $color-neutral;
+
+  &:hover:not(:disabled) {
+    background-color: $neutral-300;
+  }
+}
+
+@mixin button-inverted {
+  @include button-base;
+  background-color: $color-neutral;
+  color: $color-white;
+
+  &:hover:not(:disabled) {
+    background-color: $neutral-800;
+  }
+}
+
+@mixin button-outlined {
+  @include button-base;
+  background-color: $color-white;
+  border-color: $neutral-300;
+  color: $color-neutral;
+
+  &:hover:not(:disabled) {
+    background-color: $neutral-50;
+    border-color: $neutral-400;
+  }
+}
+
+@mixin headline {
+  font-family: $font-headline;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  color: $color-neutral;
+}
+
+@mixin body-text {
+  font-family: $font-body;
+  font-weight: $font-weight-regular;
+  line-height: $line-height-normal;
+  color: $color-neutral;
+}
+
+@mixin label-text {
+  font-family: $font-label;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  line-height: $line-height-tight;
+  color: $color-neutral;
+}

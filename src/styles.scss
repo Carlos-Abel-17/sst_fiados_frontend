@@ -1,0 +1,62 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'themes';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  @include body-text;
+  font-size: $font-size-base;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  transition:
+    background-color $transition-base,
+    color $transition-base;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @include headline;
+  margin: 0 0 $spacing-md;
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: $font-size-4xl; }
+h2 { font-size: $font-size-3xl; }
+h3 { font-size: $font-size-2xl; }
+h4 { font-size: $font-size-xl; }
+h5 { font-size: $font-size-lg; }
+h6 { font-size: $font-size-base; }
+
+p {
+  margin: 0 0 $spacing-md;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+}

@@ -1,0 +1,236 @@
+<div class="microphone-page">
+  <button
+    type="button"
+    class="theme-toggle"
+    (click)="theme.toggle()"
+    [attr.aria-label]="theme.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
+  >
+    @if (theme.isDark()) {
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 3a1 1 0 0 1 1 1v1.07A7.002 7.002 0 0 1 18.93 11H20a1 1 0 1 1 0 2h-1.07A7.002 7.002 0 0 1 13 18.93V20a1 1 0 1 1-2 0v-1.07A7.002 7.002 0 0 1 5.07 13H4a1 1 0 1 1 0-2h1.07A7.002 7.002 0 0 1 11 5.07V4a1 1 0 0 1 1-1zm0 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"
+          fill="currentColor"
+        />
+      </svg>
+    } @else {
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M21 14.5A7.5 7.5 0 0 1 9.5 3 6.5 6.5 0 1 0 21 14.5z"
+          fill="currentColor"
+        />
+      </svg>
+    }
+  </button>
+
+  <section class="voice-section">
+    <h1 class="voice-section__title">Toca para registrar fiado</h1>
+    <p class="voice-section__subtitle">
+      @if (isRecording()) {
+        Toca de nuevo para detener la grabación
+      } @else if (hasPendingAudio()) {
+        Audio listo — pulsa procesar para enviar
+      } @else {
+        Toca el micrófono para grabar
+      }
+    </p>
+
+    <div class="mic-control">
+      <button
+        type="button"
+        class="mic-button"
+        [class.mic-button--recording]="isRecording()"
+        (click)="onMicClick()"
+        [disabled]="isSaving() || rowRecordingIndex() !== null || rowSavingIndex() !== null"
+        [attr.aria-pressed]="isRecording()"
+        [attr.aria-label]="isRecording() ? 'Detener grabación' : 'Iniciar grabación'"
+      >
+        <svg
+          class="mic-button__icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          @if (isRecording()) {
+            <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+          } @else {
+            <path
+              d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"
+              fill="currentColor"
+            />
+            <path
+              d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"
+              fill="currentColor"
+            />
+          }
+        </svg>
+      </button>
+
+      @if (isRecording() || hasPendingAudio()) {
+        <div class="recording-timer" aria-live="polite">
+          @if (isRecording()) {
+            <span class="recording-timer__dot"></span>
+          }
+          <span class="recording-timer__time">{{ formattedTime() }}</span>
+        </div>
+      }
+
+      @if (hasPendingAudio() && !isRecording()) {
+        <button
+          type="button"
+          class="send-button"
+          (click)="onSendClick()"
+          [disabled]="isSaving()"
+          aria-label="Procesar y enviar audio"
+        >
+          <svg
+            class="send-button__icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a1 1 0 0 0-1.36 1.05l1.9 6.67a1 1 0 0 0 .95.73H12v2H4.89a1 1 0 0 0-.95.73l-1.9 6.67A1 1 0 0 0 3.4 20.4z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>{{ isSaving() ? 'Procesando…' : 'Procesar' }}</span>
+        </button>
+      }
+    </div>
+
+    @if (isSaving()) {
+      <p class="voice-section__hint">Enviando audio…</p>
+    }
+
+    @if (micHint()) {
+      <p class="voice-section__hint">{{ micHint() }}</p>
+    }
+
+    @if (recordingError()) {
+      <p class="voice-section__error">{{ recordingError() }}</p>
+    }
+  </section>
+
+  @if(!session()){
+    <section class="records-section">
+      <header class="records-section__header">
+        <h2 class="records-section__title">Registros Recientes</h2>
+      </header>
+  
+      <ul class="records-list">
+        @for (record of records; track record.id) {
+          <li class="record-card">
+            <div
+              class="record-card__avatar"
+              [style.background-color]="record.avatarColor"
+            >
+              {{ record.initial }}
+            </div>
+  
+            <div class="record-card__info">
+              <span class="record-card__name">{{ record.name }}</span>
+              <span class="record-card__details">
+                {{ record.timeAgo }} &bull; {{ record.items }}
+              </span>
+            </div>
+  
+            <div class="record-card__amount-block">
+              <span class="record-card__amount">
+                S/ {{ record.amount | number: '1.2-2' }}
+              </span>
+              <span class="record-card__status">{{ record.status }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  } @else if (session(); as result) {
+    <section class="records-section">
+      <header class="records-section__header">
+        <h2 class="records-section__title">
+          @if (result.fiados.length === 1) {
+            Fiado pendiente
+          } @else {
+            Fiados detectados
+          }
+        </h2>
+      </header>
+
+      @if (saveMessage()) {
+        <p class="records-section__hint">{{ saveMessage() }}</p>
+      }
+
+      <p-table
+        [value]="result.fiados"
+        [tableStyle]="{ 'min-width': '100%' }"
+      >
+        <ng-template #header>
+          <tr>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Monto</th>
+            <th>Corregir</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item let-rowIndex="rowIndex">
+          <tr [class.fiado-row--error]="necesitaCorreccion(item)">
+            <td>{{ item.cliente }}</td>
+            <td>{{ item.producto ?? '—' }}</td>
+            <td>S/ {{ item.monto | number: '1.2-2' }}</td>
+            <td>
+              @if (necesitaCorreccion(item)) {
+                <button
+                  type="button"
+                  class="row-mic-button"
+                  [class.row-mic-button--recording]="isRowRecording(rowIndex)"
+                  (click)="onRowMicClick(rowIndex, item)"
+                  [disabled]="
+                    isGuardando() ||
+                    isSaving() ||
+                    (rowRecordingIndex() !== null && !isRowRecording(rowIndex)) ||
+                    (rowSavingIndex() !== null && !isRowSaving(rowIndex)) ||
+                    isRecording()
+                  "
+                  [attr.aria-label]="
+                    isRowRecording(rowIndex)
+                      ? 'Detener y enviar corrección'
+                      : 'Grabar corrección de fila'
+                  "
+                >
+                  @if (isRowSaving(rowIndex)) {
+                    <span class="row-mic-button__spinner" aria-hidden="true"></span>
+                  } @else if (isRowRecording(rowIndex)) {
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  }
+                </button>
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <div class="records-section__actions">
+        <p-button
+          label="Guardar"
+          [loading]="isGuardando()"
+          [disabled]="!canGuardar()"
+          (onClick)="onGuardarClick()"
+        />
+      </div>
+    </section>
+  }
+
+</div>
